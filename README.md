@@ -56,3 +56,81 @@ Setelah mendapatkan tree pada masing-masing subnet, selanjutnya berikut adalah t
 |  A8 | Network ID        | 192.188.7.136       |	
 |     | Netmask           | 255.255.255.248  |	
 |     | Broadcast Address | 192.188.7.143      |
+
+## Soal 1
+Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Foosha menggunakan iptables, tetapi Luffy tidak ingin menggunakan MASQUERADE.
+
+### Jawaban
+Konfigurasi interface pada Foosha sebagai berikut.
+
+![ifaceFoosha](/img/interfaces-foosha.jpeg)
+
+```bash
+iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source "$eth0_ip"
+```
+
+Keterangan:
+-t nat: Menggunakan tabel NAT karena akan mengubah alamat asal dari paket.
+
+-A POSTROUTING: Menggunakan chain POSTROUTING karena mengubah asal paket setelah routing
+
+-o eth0: Paket keluar dari eth0 Foosha
+
+-j SNAT: Menggunakan target SNAT untuk mengubah source atau alamat asal dari paket
+
+--to-source: Mendefinisikan IP source, di mana digunakan eth0 Foosha
+
+### Test 3
+
+![test1](/img/1-pingkeluar-cipher.jpeg)
+
+## Soal 2
+Kalian diminta untuk mendrop semua akses HTTP dari luar Topologi kalian pada server yang merupakan DHCP Server dan DNS Server demi menjaga keamanan.
+
+### Jawaban
+Konfigurasi `iptables` pada Jipangu dan Doriki.
+
+```bash
+iptables -A INPUT ! -s 192.188.0.0/21 -p tcp --dport 80 -j DROP
+```
+
+Keterangan:
+-A INPUT: Menggunakan chain INPUT
+
+-p tcp: Protokol yang digunakan, yaitu tcp
+
+--dport 80: Port yang digunakan, yaitu 80
+
+-j DROP: Paket di-drop
+
+### Test
+
+![test2.1](/img/2-1-nmap-doriki.jpeg)
+
+![test2.2](/img/2-2-nmap-jipangu.jpeg)
+
+## Soal 3
+Karena kelompok kalian maksimal terdiri dari 3 orang. Luffy meminta kalian untuk membatasi DHCP dan DNS Server hanya boleh menerima maksimal 3 koneksi ICMP secara bersamaan menggunakan iptables, selebihnya didrop.
+
+### Jawaban
+
+```bash
+iptables -A INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP
+```
+
+Keterangan:
+A INPUT: Menggunakan chain INPUT
+
+-p icmp: Mendefinisikan protokol yang digunakan, yaitu ICMP (ping)
+
+-m connlimit: Menggunakan rule connection limit
+
+--connlimit-above 3: Limit yang ditangkap paket adalah di atas 3
+
+--connlimit-mask 0 : Hanya memperbolehkan 3 koneksi setiap subnet dalam satu waktu
+
+-j DROP: Paket di-drop
+
+### Test
+
+![test3](/img/3-ping4client.jpeg)
