@@ -7,10 +7,10 @@ NRP              | Nama
 05111940000178   | Muhammad Rizqullah Akbar
 05111940000227   | Rayhan Daffa Alhafish
 
-# Topologi 
-![img](https://github.com/rayhandaffa/Jarkom-Modul-5-C09-2021/blob/main/img/topologi.jpeg) <br>
+## Topologi 
+![img](https://github.com/rayhandaffa/Jarkom-Modul-5-C09-2021/blob/main/img/topologi-bernomer.jpeg) <br>
 
-# Pembagian Subnet (CIDR)
+## Pembagian Subnet (CIDR)
 Subnetting menggunakan metode CIDR dengan jumlah subnet 8 buah. Hasil pembagian subnet sebagai berikut : <br> 
 | Subnet | Jumlah IP | Netmask |	
 |:------:|:---------:|:-------:|	
@@ -26,7 +26,7 @@ Subnetting menggunakan metode CIDR dengan jumlah subnet 8 buah. Hasil pembagian 
 
 Berdasarkan tabel di atas didaptkan netmask /21 sebagai netmask terbesar yang akan digunakan untuk pembagian IP.
 
-# Pembagian IP 
+## Pembagian IP 
 Berikut adalah pembagian IP yang diilustrasikan dengan menggunakan tree. Pada tree berikut dapat diketahui netrork ID yang dapat digunakan pada masing-masing subnet. <br> 
 ![img](https://github.com/rayhandaffa/Jarkom-Modul-5-C09-2021/blob/main/img/tree_ip.jpeg) <br> 
 
@@ -56,6 +56,50 @@ Setelah mendapatkan tree pada masing-masing subnet, selanjutnya berikut adalah t
 |  A8 | Network ID        | 192.188.7.136       |	
 |     | Netmask           | 255.255.255.248  |	
 |     | Broadcast Address | 192.188.7.143      |
+
+## DHCP Server dan DHCP Relay
+Hal yang pertama dilakukan adalah meng-assign IP address ke masing-masing node pada topologi selain Client. Setelah itu lakukan routing dari foosha ke seluruh subnet pada topologi. Lalu, untuk DHCP relay, arahkan semua request ke IP Jipangu sebagai DHCP Server pada topologi. Selanjutnya, lakukanlah pengaturan IP Client pada node Jipangu. <br> 
+
+```subnet 192.188.7.128 netmask 255.255.255.248 {
+}
+
+subnet 192.188.7.0 netmask 255.255.255.128 {
+        range 192.188.7.2 192.188.7.126;
+        option routers 192.188.7.1;
+        option broadcast-address 192.188.7.128;
+        option domain-name-servers 192.188.7.130;
+        default-lease-time 360;
+        max-lease-time 7200;
+}
+
+subnet 192.188.0.0 netmask 255.255.252.0 {
+        range 192.188.0.2 192.188.3.254;
+        option routers 192.188.0.1;
+        option broadcast-address 192.188.3.255;
+        option domain-name-servers 192.188.7.130;
+        default-lease-time 360;
+        max-lease-time 7200;
+}
+
+subnet 192.188.4.0 netmask 255.255.254.0 {
+        range 192.188.4.2 192.188.5.254;
+        option routers 192.188.4.1;
+        option broadcast-address 192.188.5.255;
+        option domain-name-servers 192.188.7.130;
+        default-lease-time 360;
+        max-lease-time 7200;
+}
+
+subnet 192.188.6.0 netmask 255.255.255.0 {
+        range 192.188.6.2 192.188.6.254;
+        option routers 192.188.6.1;
+        option broadcast-address 192.188.6.255;
+        option domain-name-servers 192.188.7.130;
+        default-lease-time 360;
+        max-lease-time 7200;
+}
+```
+Jangan lupa untuk menghidupkan DNS Server dan arahkan ke IP Doriki agar dapat tersambung pada internet.
 
 ## Soal 1
 Agar topologi yang kalian buat dapat mengakses keluar, kalian diminta untuk mengkonfigurasi Foosha menggunakan iptables, tetapi Luffy tidak ingin menggunakan MASQUERADE.
